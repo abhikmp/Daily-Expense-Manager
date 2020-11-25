@@ -1,3 +1,31 @@
+<?php
+
+  session_start();
+
+  $emailID = "";
+  $pass = "";
+
+  $db = mysqli_connect('localhost', 'newroot', '12345', 'expmgr') or die('could not connect');
+
+  if (isset($_POST['login'])) {
+    $emailID = mysqli_real_escape_string($db, $_POST['emailid']);
+    $pass = mysqli_real_escape_string($db, $_POST['password']);
+    $pass = md5($pass);
+    $query = "SELECT * FROM user WHERE email = '$emailID' AND pass = '$pass' ";
+    $results = mysqli_query($db, $query) or die("unable to check at the moment");
+    $user = mysqli_fetch_assoc($results);
+    if (mysqli_num_rows($results)) {
+      $_SESSION['username'] = $user['username'];
+      header("location: dashboard.php");
+    } else {
+      print("credentials dont match");
+    }
+  }
+  
+?>
+
+
+
 <!DOCTYPE html>
 <html>
 
@@ -28,22 +56,21 @@
 
     <div class="col-md-4">
       <div class="loginSection">
-        <form class="myForm text-center">
+        <form class="myForm text-center" action="#" method="POST">
           <header>Login</header>
           <div class="form-group">
             <!-- <i class="fas fa-user"></i> -->
             <!-- <label class = "myLabel" for="username">Username</label> -->
-            <input type="email" class="myInput" id="emailID" placeholder="username" required>
+            <input type="email" class="myInput" id="emailID" placeholder="username" name="emailid" required>
           </div>
 
           <div class="form-group">
             <!-- <i class="fas fa-lock"></i> -->
             <!-- <label class = "myLabel" for="password">Password</label> -->
-            <input type="password" class="myInput" id="password" placeholder="password" required>
+            <input type="password" class="myInput" id="password" placeholder="password" name="password" required>
           </div>
-          <input type="submit" class="SubmitBtn" value="login">
-          <br>
-          <a class = "registerLink" href="home.html">New User? Register</a>
+          <input type="submit" class="SubmitBtn" value="login" name="login">
+          <a class = "registerLink" href="register.html">New User? Register</a>
         
         </form>
       </div>

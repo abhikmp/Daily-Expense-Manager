@@ -4,39 +4,44 @@
     box-sizing: border-box;
 }
 body {
-    background-color: #212121;
+    background-color: ivory;
+}
+.navbar {
+    position: sticky;
+    top: 0;
 }
 .titleName {
-    color: #fff;
+    color: white;
+}
+
+.titleName:hover {
+    color: white;
 }
 
 .regSection {
     position: relative;
-    
     width: 650px;
     margin: auto;
-    margin-top: 70px;
+    margin-top: 40px;
     display: flex;
     justify-content: center;
     align-items: center;
-    
+    background-color: #fff;
 }
 
 .myForm {
     position: relative;
-    background-color: silver;
-    
     margin: 10px;
     padding: 10px;
     border-radius: 20px;
     background: rgba(25,25,25,0.04);
     box-shadow: -6px 4px 28px 4px rgba(0,0,0,0.75);
     height: 50%;
-    width: 85%;
+    width: 80%;
 }
 
 .myForm header {
-    color: #fff;
+    color: #282828;
     font-size: 33px;
     font-weight: 800;
     margin: 30px;    
@@ -49,7 +54,7 @@ body {
     color: black;
     border-radius: 30px;
     height: 40px;
-    width: 250px;
+    width: 70%;
         
     text-align: center;
     border: none;
@@ -61,11 +66,9 @@ body {
 }
 
 .myForm .SubmitBtn {
-    margin: 5px;
-    margin-top: 35px;
-    margin-bottom: 20px;
+    margin: 10px;
     font-size: 16px;
-    background-color: azure;
+    background-color: lightblue;
     border-radius: 25px;
     width: 150px;
     height: 40px;
@@ -74,9 +77,8 @@ body {
 
 .myForm .SubmitBtn:hover {
     outline: none;
-    margin: 5px;
-    margin-bottom: 20px;
-    background-color: darkslategrey;
+    margin: 10px;
+    background-color: blue;
     color: #fff;
     border-radius: 25px;
     width: 150px;
@@ -88,5 +90,5 @@ body {
 .myForm .loginLink {
     display: flex;
     justify-content: center;
-    margin: 35px;
+    margin: 20px;
 }
