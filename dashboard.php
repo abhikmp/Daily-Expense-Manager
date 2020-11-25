@@ -13,6 +13,56 @@
     <link rel="stylesheet" href="dashboard.css" />
 </head>
 
+<script>
+  payment = 0
+  function removePayment() {
+    if(payment >= 1) {
+      document.getElementById('paymentInput').remove();
+      payment = 0
+    }
+  }
+
+  function addCard() {
+    if(payment >= 1) {
+      removePayment()
+    }
+    payment = 1
+    var obj = document.getElementById("paymentDetail");
+    const div = document.createElement('div')
+    div.innerHTML = `<div id="paymentInput">
+                      <label for="exampleFormControlSelect1">Card</label>
+                        <select class="form-control" id="modeform">
+                          <!-- Fetching list from card added by particular user and showing it here -->
+                          <option>HDFC Card</option>
+                          <option>AXIS BANK</option>
+                          <option>PNG CARD</option>
+                        </select> 
+                    </div>`;
+
+    obj.appendChild(div);
+    
+  }
+
+  function addBanking() {
+    if(payment >= 1) {
+      removePayment()
+    }
+    payment = 1
+    var obj = document.getElementById("paymentDetail");
+    const div = document.createElement('div')
+    div.innerHTML = `<div id="paymentInput">
+                      <div class="form-group">
+                        <label for="exampleFormControlInput1">Bank Detail</label>
+                        <input type="text" class="form-control" id="bankDetail" placeholder="Bank Detail">
+                      </div>
+                    </div>`;
+
+    obj.appendChild(div);
+    
+  }
+
+</script>
+
 <body>
     <nav class="navbar navbar-expand-md navbar-dark bg-dark">
         <a href="dashboard.php" class="navbar-brand">Daily Expense Manager</a>
@@ -26,7 +76,7 @@
                     <div class="dropdown-menu dropdown-menu-right">
                         <a href="#" class="dropdown-item">View past transactions</a>
                         <a href="#" class="dropdown-item">Edit Information</a>
-                        <a href="#" class="dropdown-item">Add card</a>
+                        <a type="button" class="dropdown-item" data-toggle="modal" data-target="#myModal">Add card</a>
                         <div class="dropdown-divider"></div>
                         <a href="#" class="dropdown-item">Logout</a>
                     </div>
@@ -34,7 +84,37 @@
             </ul>
         </div>
     </nav>
+<!-- Dialog box for add card -->
+    <div class="modal fade" id="myModal" role="dialog">
+      <div class="modal-dialog">
 
+        
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+          </div>
+          <div class="modal-body">
+
+          <!-- Form for entering card details -->
+            <form>
+              <div class="form-group">
+                <label for="card name"><h5>Card name</h5></label>
+                <input type="text" class="form-control" id="cardname" placeholder="card name">
+              </div>
+              <button type="submit" class="btn btn-primary" data-dismiss="modal">Submit</button>
+            </form>
+          </div>
+          <!-- Form ending -->
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+
+      </div>
+   </div>
+<!-- Dialog box for add card -->
+
+<!-- First row for showing summary -->
     <div class="firstrow">
         <div class="row">
             <div class="col-6 row1col1">
@@ -61,42 +141,66 @@
             </div>
         </div>
     </div>
+<!-- First row for showing summary -->
+
+<!-- Second row for adding details and showing latest transactions -->
     <div class="secondrow">
         <div class="row">
             <div class="col-6 row2col1">
                 <h2 id="adddetails">Add details</h2>
                 <div class="formentry">
+
+                <!-- FORM FOR ENTERING TRANSACTION DETAILS -->
                     <form>
+                        <div class="form-group">
+                          <label class="control-label" for="date">Date</label>
+                          <input class="form-control" id="date" name="date" placeholder="MM/DD/YYY" type="date" max="<?php echo date("Y-m-d"); ?>"/>
+                        </div>
                         <div class="form-group">
                           <label for="exampleFormControlInput1">Title</label>
                           <input type="text" class="form-control" id="titleform" placeholder="Title">
                         </div>
                         <div class="form-group">
-                            <label for="exampleFormControlInput1">Amount</label>
-                            <input type="number" class="form-control" id="amountform" placeholder="Amount">
-                          </div>
+                          <label for="paymentType">Payment Type</label>
+                        </div>  
                         <div class="form-group">
-                          <label for="exampleFormControlSelect1">Mode of payment</label>
-                          <select class="form-control" id="modeform">
-                            <!-- <option>Select</option> -->
-                            <option>Card</option>
-                            <option>UPI</option>
-                            <option>Net Banking</option>
-                            <option>Cash</option>
-                          </select>
-                        </div>
-                        <div class="form-group">
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="creditform" value="credit">
-                                <label class="form-check-label" for="inlineRadio1">Credit</label>
+                              <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="paymentType" id="cashPayment" value="cashPayment" checked onclick="removePayment()">
+                                <label class="form-check-label" for="inlineRadio2">Cash</label>
                               </div>
                               <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="debitform" value="debit">
-                                <label class="form-check-label" for="inlineRadio2">Debit</label>
+                                <input class="form-check-input" type="radio" name="paymentType" id="cardPayment" value="cardPayment" onclick="addCard()">
+                                <label class="form-check-label" for="inlineRadio1">Card</label>
+                              </div>
+                              
+                              <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="paymentType" id="internetBanking" value="internetBanking" onclick="addBanking()">
+                                <label class="form-check-label" for="inlineRadio2">Internet Banking</label>
                               </div>
                         </div>
+                        <div class="form-group" id="paymentDetail"></div>
+                        <div class="form-group">
+                            <label for="exampleFormControlInput1">Amount</label>
+                            <input type="number" class="form-control" id="amountform" placeholder="Amount">
+                        </div>
+                        
+                        <div class="form-group">
+                          <label for="type">Type</label>
+                        </div>  
+                        <div class="form-group">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="type" id="debitform" value="debit" checked>
+                                <label class="form-check-label" for="inlineRadio2">Debit</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="type" id="creditform" value="credit">
+                                <label class="form-check-label" for="inlineRadio1">Credit</label>
+                            </div>
+                              
+                        </div>
                         <button type="submit" class="btn btn-primary">Submit</button>
-                      </form>
+                     </form>
+                      
                 </div>
             </div>
             <div class="col-6 row2col2">
@@ -127,285 +231,6 @@
                                         More
                                       </button>
                                       <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog" role="document">
-                                          <div class="modal-content">
-                                            <div class="modal-header">
-                                              <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                              </button>
-                                            </div>
-                                            <div class="modal-body">
-                                              ...
-                                            </div>
-                                            <div class="modal-footer">
-                                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                              <button type="button" class="btn btn-primary">Save changes</button>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <th scope="row">2</th>
-                                <td>Salary</td>
-                                <td>15000</td>
-                                <td>Card</td>
-                                <td>Credit</td>
-                                <td>
-                                    <button type="button" class="btn btn-light btn-sm" data-toggle="modal" data-target="#exampleModal1">
-                                        More
-                                      </button>
-                                      <div class="modal fade" id="exampleModal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog" role="document">
-                                          <div class="modal-content">
-                                            <div class="modal-header">
-                                              <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                              </button>
-                                            </div>
-                                            <div class="modal-body">
-                                              ...
-                                            </div>
-                                            <div class="modal-footer">
-                                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                              <button type="button" class="btn btn-primary">Save changes</button>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <th scope="row">3</th>
-                                <td>Rent</td>
-                                <td>2500</td>
-                                <td>Cash</td>
-                                <td>Debit</td>
-                                <td>
-                                    <button type="button" class="btn btn-light btn-sm" data-toggle="modal" data-target="#exampleModal2">
-                                        More
-                                      </button>
-                                      <div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog" role="document">
-                                          <div class="modal-content">
-                                            <div class="modal-header">
-                                              <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                              </button>
-                                            </div>
-                                            <div class="modal-body">
-                                              ...
-                                            </div>
-                                            <div class="modal-footer">
-                                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                              <button type="button" class="btn btn-primary">Save changes</button>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <th scope="row">3</th>
-                                <td>Rent</td>
-                                <td>2500</td>
-                                <td>Cash</td>
-                                <td>Debit</td>
-                                <td>
-                                    <button type="button" class="btn btn-light btn-sm" data-toggle="modal" data-target="#exampleModal2">
-                                        More
-                                      </button>
-                                      <div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog" role="document">
-                                          <div class="modal-content">
-                                            <div class="modal-header">
-                                              <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                              </button>
-                                            </div>
-                                            <div class="modal-body">
-                                              ...
-                                            </div>
-                                            <div class="modal-footer">
-                                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                              <button type="button" class="btn btn-primary">Save changes</button>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <th scope="row">3</th>
-                                <td>Rent</td>
-                                <td>2500</td>
-                                <td>Cash</td>
-                                <td>Debit</td>
-                                <td>
-                                    <button type="button" class="btn btn-light btn-sm" data-toggle="modal" data-target="#exampleModal2">
-                                        More
-                                      </button>
-                                      <div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog" role="document">
-                                          <div class="modal-content">
-                                            <div class="modal-header">
-                                              <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                              </button>
-                                            </div>
-                                            <div class="modal-body">
-                                              ...
-                                            </div>
-                                            <div class="modal-footer">
-                                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                              <button type="button" class="btn btn-primary">Save changes</button>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <th scope="row">3</th>
-                                <td>Rent</td>
-                                <td>2500</td>
-                                <td>Cash</td>
-                                <td>Debit</td>
-                                <td>
-                                    <button type="button" class="btn btn-light btn-sm" data-toggle="modal" data-target="#exampleModal2">
-                                        More
-                                      </button>
-                                      <div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog" role="document">
-                                          <div class="modal-content">
-                                            <div class="modal-header">
-                                              <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                              </button>
-                                            </div>
-                                            <div class="modal-body">
-                                              ...
-                                            </div>
-                                            <div class="modal-footer">
-                                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                              <button type="button" class="btn btn-primary">Save changes</button>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <th scope="row">3</th>
-                                <td>Rent</td>
-                                <td>2500</td>
-                                <td>Cash</td>
-                                <td>Debit</td>
-                                <td>
-                                    <button type="button" class="btn btn-light btn-sm" data-toggle="modal" data-target="#exampleModal2">
-                                        More
-                                      </button>
-                                      <div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog" role="document">
-                                          <div class="modal-content">
-                                            <div class="modal-header">
-                                              <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                              </button>
-                                            </div>
-                                            <div class="modal-body">
-                                              ...
-                                            </div>
-                                            <div class="modal-footer">
-                                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                              <button type="button" class="btn btn-primary">Save changes</button>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <th scope="row">3</th>
-                                <td>Rent</td>
-                                <td>2500</td>
-                                <td>Cash</td>
-                                <td>Debit</td>
-                                <td>
-                                    <button type="button" class="btn btn-light btn-sm" data-toggle="modal" data-target="#exampleModal2">
-                                        More
-                                      </button>
-                                      <div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog" role="document">
-                                          <div class="modal-content">
-                                            <div class="modal-header">
-                                              <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                              </button>
-                                            </div>
-                                            <div class="modal-body">
-                                              ...
-                                            </div>
-                                            <div class="modal-footer">
-                                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                              <button type="button" class="btn btn-primary">Save changes</button>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <th scope="row">3</th>
-                                <td>Rent</td>
-                                <td>2500</td>
-                                <td>Cash</td>
-                                <td>Debit</td>
-                                <td>
-                                    <button type="button" class="btn btn-light btn-sm" data-toggle="modal" data-target="#exampleModal2">
-                                        More
-                                      </button>
-                                      <div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog" role="document">
-                                          <div class="modal-content">
-                                            <div class="modal-header">
-                                              <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                              </button>
-                                            </div>
-                                            <div class="modal-body">
-                                              ...
-                                            </div>
-                                            <div class="modal-footer">
-                                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                              <button type="button" class="btn btn-primary">Save changes</button>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                </td>
-                              </tr>
-                              <tr>
-                                <th scope="row">3</th>
-                                <td>Rent</td>
-                                <td>2500</td>
-                                <td>Cash</td>
-                                <td>Debit</td>
-                                <td>
-                                    <button type="button" class="btn btn-light btn-sm" data-toggle="modal" data-target="#exampleModal2">
-                                        More
-                                      </button>
-                                      <div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div class="modal-dialog" role="document">
                                           <div class="modal-content">
                                             <div class="modal-header">
