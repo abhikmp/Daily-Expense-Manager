@@ -75,10 +75,10 @@
                     <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Hi User</a>
                     <div class="dropdown-menu dropdown-menu-right">
                         <a href="#" class="dropdown-item">View past transactions</a>
-                        <a href="#" class="dropdown-item">Edit Information</a>
+                        <a href="settings.php" class="dropdown-item">Edit Information</a>
                         <a type="button" class="dropdown-item" data-toggle="modal" data-target="#myModal">Add card</a>
                         <div class="dropdown-divider"></div>
-                        <a href="#" class="dropdown-item">Logout</a>
+                        <a href="home.php" class="dropdown-item">Logout</a>
                     </div>
                 </li>
             </ul>

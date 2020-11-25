@@ -1,0 +1,72 @@
+*
+{
+    margin: 0;
+    padding: 0;
+}
+
+body
+{
+    position: relative;
+    margin: 0;
+    padding-bottom: 36rem;
+}
+label{
+    text-align: left;
+}
+
+.bg-dark
+{
+    background-color: black !important;
+}
+
+
+div.navbar-collapse
+{
+    flex-grow: 0;
+}
+
+.bg-dark
+{
+    background-color: black ;
+}
+
+.navbar-brand
+{
+    color: white !important;
+}
+
+.container-form
+{
+    margin-top: 3%;;
+    justify-content: center;
+    text-align: center;
+}
+
+form , .form-group, .card-body
+{
+    max-width: -moz-max-content;
+    max-width: fit-content;
+}
+
+.card-body
+{
+    margin-left: auto;
+    margin-right: auto;
+
+}
+.form-title
+{
+    padding-bottom: 10px;
+    text-align: left;
+}
+
+input.form-control
+{
+    width: 400px;
+}
+
+.Change-btn
+{
+    text-align: left;
+    justify-content: left;
+}
