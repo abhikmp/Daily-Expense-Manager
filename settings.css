@@ -10,29 +10,14 @@ body
     margin: 0;
     padding-bottom: 36rem;
 }
-label{
-    text-align: left;
-}
-
-.bg-dark
-{
-    background-color: black !important;
-}
-
-
-div.navbar-collapse
-{
-    flex-grow: 0;
-}
-
-.bg-dark
-{
-    background-color: black ;
-}
 
 .navbar-brand
 {
-    color: white !important;
+    color: white;
+}
+
+label{
+    text-align: left;
 }
 
 .container-form
@@ -42,18 +27,6 @@ div.navbar-collapse
     text-align: center;
 }
 
-form , .form-group, .card-body
-{
-    max-width: -moz-max-content;
-    max-width: fit-content;
-}
-
-.card-body
-{
-    margin-left: auto;
-    margin-right: auto;
-
-}
 .form-title
 {
     padding-bottom: 10px;
@@ -66,7 +39,7 @@ input.form-control
 }
 
 .Change-btn
-{
+{  
     text-align: left;
     justify-content: left;
 }
