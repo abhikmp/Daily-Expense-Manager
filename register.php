@@ -1,5 +1,6 @@
 <?php
   session_start();
+  $_SESSION['username'] = NULL;
   $usrname = "";
   $password = "";
   $emailID = "";
@@ -17,6 +18,7 @@
         $query = "INSERT INTO user(username, email, pass) VALUES ('$usrname','$emailID','$pass') ";
         mysqli_query($db, $query) or die("insert not done");
         $_SESSION['username'] = $usrname;
+        
         header('location: dashboard.php');
       } else {
         print("<span class='alert alert-danger'>user already exists</span>");

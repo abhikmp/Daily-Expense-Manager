@@ -9,6 +9,7 @@ body
     position: relative;
     margin: 0;
     padding-bottom: 36rem;
+    height: 100vh;
 }
 
 .navbar-brand
@@ -42,4 +43,8 @@ input.form-control
 {  
     text-align: left;
     justify-content: left;
+}
+.message {
+    margin: auto;
+    margin-top: 20px;
 }

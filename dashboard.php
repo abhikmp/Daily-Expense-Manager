@@ -1,3 +1,10 @@
+<?php 
+  session_start();
+  if($_SESSION['username'] == NULL) {
+    header('location: home.php');
+  }
+?>
+
 <!DOCTYPE html>
 <html>
 
@@ -72,7 +79,7 @@
         <div id="navbarCollapse" class="collapse navbar-collapse">
             <ul class="nav navbar-nav ml-auto">
                 <li class="nav-item dropdown">
-                    <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Hi User</a>
+                    <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Hi <?= $_SESSION['username'];?></a>
                     <div class="dropdown-menu dropdown-menu-right">
                         <a href="#" class="dropdown-item">View past transactions</a>
                         <a href="settings.php" class="dropdown-item">Edit Information</a>

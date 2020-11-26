@@ -16,6 +16,7 @@
     $user = mysqli_fetch_assoc($results);
     if (mysqli_num_rows($results)) {
       $_SESSION['username'] = $user['username'];
+      $_SESSION['emailID'] = $user['email'];
       header("location: dashboard.php");
     } else {
       print("credentials dont match");
@@ -61,7 +62,7 @@
           <div class="form-group">
             <!-- <i class="fas fa-user"></i> -->
             <!-- <label class = "myLabel" for="username">Username</label> -->
-            <input type="email" class="myInput" id="emailID" placeholder="username" name="emailid" required>
+            <input type="email" class="myInput" id="emailID" placeholder="email ID" name="emailid" required>
           </div>
 
           <div class="form-group">
