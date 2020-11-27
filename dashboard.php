@@ -285,6 +285,7 @@
               <thead class="thead-dark">
                 <tr>
                   <th class="header" scope="col">Sl No.</th>
+                  <th class="header" scope="col">Date</th>
                   <th class="header" scope="col">Title</th>
                   <th class="header" scope="col">Amount</th>
                   <th class="header" scope="col">Mode</th>
@@ -293,12 +294,13 @@
               </thead>
               <tbody>
                 <?php
-                $results = mysqli_query($db, "SELECT title, amount, payment_type, type FROM expense WHERE uid=$uid LIMIT 10");
+                $results = mysqli_query($db, "SELECT title, date, amount, payment_type, type FROM expense WHERE uid=$uid LIMIT 10");
                 $i = 1;
                 while ($rows = mysqli_fetch_assoc($results)) {
                 ?>
                   <tr>
                     <th scope="row"><?php print($i); ?></th>
+                    <td><?php print($rows['date']); ?></td>
                     <td><?php print($rows['title']); ?></td>
                     <td><?php print($rows['amount']); ?></td>
                     <td><?php print($rows['payment_type']); ?></td>
