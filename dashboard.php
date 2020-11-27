@@ -9,45 +9,38 @@
   $result = mysqli_query($db, "SELECT uid FROM user WHERE email='$emailID'") or die('unable to retrieve uid');
   $uid = (int)mysqli_fetch_assoc($result);
   
-  if(isset($_POST['card_submit'])){
+
+  if (isset($_POST['card_submit'])) {
     $cardName = $_POST['cardName'];
-    $cardexists = mysqli_query($db, "SELECT * FROM card WHERE card_name='$cardName'") or die("cardexists".mysqli_error($db));
-       if($row=mysqli_fetch_assoc($cardexists)){
-         echo "";
-       }else{
-          mysqli_query($db,"INSERT INTO card(card_name, uid) VALUES ('$cardName', $uid)");
+    $cardexists = mysqli_query($db, "SELECT * FROM card WHERE card_name='$cardName'") or die("cardexists" . mysqli_error($db));
+    if ($row = mysqli_fetch_assoc($cardexists)) {
+      echo "";
+    } else {
+      mysqli_query($db, "INSERT INTO card(card_name, uid) VALUES ('$cardName', $uid)");
+    }
+    $_POST['card_submit'] = NULL;
   }
-  }
-  
+
   if (isset($_POST['submit'])) {
     $date = date($_POST['date']);
     $amount = $_POST['amount'];
     $title = $_POST['title'];
     $type = $_POST['type']; //credit or debit
     $paymentType = $_POST['paymentType']; //upi or net banking or card
-  
-    if (isset($_POST['card'])) {
-      $cardName = $_POST['card'];
-      $result = mysqli_query($db, "SELECT card_id FROM card WHERE card_name='$cardName' AND uid=$uid");
-      $cardID = (int)mysqli_fetch_assoc($result);
-      mysqli_query($db, "INSERT INTO expense(uid, amount, title, payment_type, type, date, card_id) VALUES ($uid, $amount, '$title', '$paymentType', '$type', '$date', $cardID)") or die("unable to insert into expense-card: ".mysqli_error($db));
-      // 
-      // $cardquery = "INSERT INTO card(card_name, uid) VALUES ('$cardName', $uid)";
-      // //insert into card table and get cardid
-      // mysqli_query($db, $cardquery) or die('unable to insert card' . mysqli_error($db));
-      // $result = mysqli_query($db, "SELECT card_id FROM card WHERE card_name='$cardName' AND uid=$uid");
-      // $cardID = (int)mysqli_fetch_assoc($result);
-      //} uncomment till here
-      //insert into expense table
+
+    if (isset($_POST['card_id'])) {
+      $cardID = (int)$_POST['card_id'];
+      mysqli_query($db, "INSERT INTO expense(uid, amount, title, payment_type, type, date, card_id) VALUES ($uid, $amount, '$title', '$paymentType', '$type', DATE '$date', $cardID)") or die("unable to insert into expense-card: " . mysqli_error($db));
     } elseif (isset($_POST['bank'])) {
       $bank = $_POST['bank'];
-      mysqli_query($db, "INSERT INTO expense(uid, amount, title, payment_type, type, date, bank) VALUES ($uid, $amount, '$title', '$paymentType', '$type', '$date', '$bank')") or die("unable to insert into expense-ib: ".mysqli_error($db));
-    }else {
-      mysqli_query($db,"INSERT INTO expense(uid, amount, title, payment_type, type, date) VALUES ($uid, $amount, '$title', '$paymentType', '$type', '$date')") or die('unable to insert cash info');
+      mysqli_query($db, "INSERT INTO expense(uid, amount, title, payment_type, type, date, bank) VALUES ($uid, $amount, '$title', '$paymentType', '$type', DATE '$date', '$bank')") or die("unable to insert into expense-ib: " . mysqli_error($db));
+    } else {
+      print($date);
+      mysqli_query($db, "INSERT INTO expense(uid, amount, title, payment_type, type, date) VALUES ($uid, $amount, '$title', '$paymentType', '$type', DATE '$date')") or die('unable to insert cash info');
     }
-  
+    $_POST['submit'] = NULL;
   }
-  
+
 
 ?>
 
@@ -86,13 +79,13 @@
     div.innerHTML = `<div id="paymentInput">
                       <label for="exampleFormControlSelect1">Card</label>
                         <select class="form-control" id="modeform" name="card">
-                        <?php 
-                        $cards = mysqli_query($db,"SELECT * FROM card WHERE uid=$uid");
-                        while($rows=mysqli_fetch_assoc($cards)){ 
+                        <?php
+                        $cards = mysqli_query($db, "SELECT * FROM card WHERE uid=$uid");
+                        while ($rows = mysqli_fetch_assoc($cards)) {
                         ?>
                           <!-- Fetching list from card added by particular user and showing it here -->
-                          <option value="<?php $rows['card_name'] ?>"><?php print($rows['card_name'])?></option>
-                         <?php }?>
+                          <option value="<?php $rows['card_id'] ?>"><?php print($rows['card_name']) ?></option>
+                         <?php } ?>
                         </select> 
                     </div>`;
 
@@ -159,7 +152,7 @@
               </label>
               <input type="text" class="form-control" id="cardname" placeholder="card name" name="cardName">
             </div>
-            <button type="submit" class="btn btn-primary"  name="card_submit">Submit</button>
+            <button type="submit" class="btn btn-primary" name="card_submit">Submit</button>
           </form>
         </div>
         <!-- Form ending -->
@@ -179,21 +172,21 @@
         <div class="currentmonth">
 
           <?php
-            $currMonth = date('F');
-            $res = mysqli_query($db,"SELECT SUM(amount) FROM expense WHERE MONTHNAME(date)='$currMonth' AND type='debit' AND uid=$uid");
-            $debit = (float)mysqli_fetch_assoc($res)['SUM(amount)'];
-            $res = mysqli_query($db, "SELECT SUM(amount) FROM expense WHERE MONTHNAME(date)='$currMonth' AND type='credit' AND uid=$uid");
-            $credit = (float)mysqli_fetch_assoc($res)['SUM(amount)'];
-            $limit = 15000;
-            $savings = $credit-$debit;
+          $currMonth = date('F');
+          $res = mysqli_query($db, "SELECT SUM(amount) FROM expense WHERE MONTHNAME(date)='$currMonth' AND type='debit' AND uid=$uid");
+          $debit = (float)mysqli_fetch_assoc($res)['SUM(amount)'];
+          $res = mysqli_query($db, "SELECT SUM(amount) FROM expense WHERE MONTHNAME(date)='$currMonth' AND type='credit' AND uid=$uid");
+          $credit = (float)mysqli_fetch_assoc($res)['SUM(amount)'];
+          $limit = 15000;
+          $savings = $credit - $debit;
           ?>
 
           <h2 id="currentmonthname"><?php print($currMonth); ?></h2>
           <div class="transactiondetails">
-            <p id="totalcredit">Overall Credit : <b><?php print($credit);?></b></p>
-            <p id="totaldebit">Total money spent : <b><?php print($debit)?></b></p>
-            <p id="totallimit">Total Limit : <b>15000</b></p>
-            <p id="moneyspent">Balance : <b><?php print($savings);?></b></p>
+            <p id="totalcredit">Overall Credit : <b><?php print($credit); ?></b></p>
+            <p id="totaldebit">Total money spent : <b><?php print($debit) ?></b></p>
+            <!-- <p id="totallimit">Total Limit : <b>15000</b></p> -->
+            <p id="moneyspent">Balance : <b><?php print($savings); ?></b></p>
           </div>
         </div>
       </div>
@@ -201,21 +194,21 @@
         <div class="prevmonth">
 
           <?php
-            $lastMonth = date('F', strtotime('last month'));
-            $res = mysqli_query($db,"SELECT SUM(amount) FROM expense WHERE MONTHNAME(date)='$lastMonth' AND type='debit' AND uid=$uid");
-            $debit = (float)mysqli_fetch_assoc($res)['SUM(amount)'];
-            $res = mysqli_query($db, "SELECT SUM(amount) FROM expense WHERE MONTHNAME(date)='$lastMonth' AND type='credit' AND uid=$uid");
-            $credit = (float)mysqli_fetch_assoc($res)['SUM(amount)'];
-            $limit = 15000;
-            $savings = $limit - ($credit-$debit);
+          $lastMonth = date('F', strtotime('last month'));
+          $res = mysqli_query($db, "SELECT SUM(amount) FROM expense WHERE MONTHNAME(date)='$lastMonth' AND type='debit' AND uid=$uid");
+          $debit = (float)mysqli_fetch_assoc($res)['SUM(amount)'];
+          $res = mysqli_query($db, "SELECT SUM(amount) FROM expense WHERE MONTHNAME(date)='$lastMonth' AND type='credit' AND uid=$uid");
+          $credit = (float)mysqli_fetch_assoc($res)['SUM(amount)'];
+          $limit = 15000;
+          $savings = $limit - ($credit - $debit);
           ?>
 
           <h2 id="prevmonthname"><?php print($lastMonth); ?></h2>
           <div class="transactiondetails">
-            <p id="totalcredit">Overall Credit : <b><?php print($credit);?></b></p>
-            <p id="totaldebit">Total money spent : <b><?php print($debit)?></b></p>
+            <p id="totalcredit">Overall Credit : <b><?php print($credit); ?></b></p>
+            <p id="totaldebit">Total money spent : <b><?php print($debit) ?></b></p>
             <p id="totallimit">Total Limit : <b>15000</b></p>
-            <!-- <p id="moneyspent">You saved : <b><?php print($savings);?></b></p> -->
+            <!-- <p id="moneyspent">You saved : <b><?php print($savings); ?></b></p> -->
           </div>
         </div>
       </div>
@@ -299,19 +292,20 @@
                 </tr>
               </thead>
               <tbody>
-                <?php 
-                  $results = mysqli_query($db, "SELECT title, amount, payment_type, type FROM expense WHERE uid=$uid");
-                  $i=1;
-                  while ($rows=mysqli_fetch_assoc($results)){
-                  ?>
-                <tr>
-                  <th scope="row"><?php print($i);?></th>
-                  <td><?php print($rows['title']);?></td>
-                  <td><?php print($rows['amount']);?></td>
-                  <td><?php print($rows['payment_type']);?></td>
-                  <td><?php print($rows['type']);?></td>
-                </tr>
-                  <?php $i+=1; }?>
+                <?php
+                $results = mysqli_query($db, "SELECT title, amount, payment_type, type FROM expense WHERE uid=$uid LIMIT 10");
+                $i = 1;
+                while ($rows = mysqli_fetch_assoc($results)) {
+                ?>
+                  <tr>
+                    <th scope="row"><?php print($i); ?></th>
+                    <td><?php print($rows['title']); ?></td>
+                    <td><?php print($rows['amount']); ?></td>
+                    <td><?php print($rows['payment_type']); ?></td>
+                    <td><?php print($rows['type']); ?></td>
+                  </tr>
+                <?php $i += 1;
+                } ?>
               </tbody>
             </table>
           </div>
