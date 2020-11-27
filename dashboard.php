@@ -3,7 +3,7 @@
   if($_SESSION['username'] == NULL) {
     header('location: home.php');
   }
-  $emailID = $_SESSION['emailid'];
+  $emailID = $_SESSION['emailID'];
   $db = mysqli_connect('localhost', 'newroot', '12345', 'expmgr') or die('unable to estabilish connection with database');
   $result = mysqli_query($db, "SELECT uid FROM user WHERE email='$emailID'") or die('unable to retrieve uid');
   $uid = (int)mysqli_fetch_assoc($result);
@@ -148,13 +148,15 @@
           <div class="modal-body">
 
           <!-- Form for entering card details -->
-            <form>
-              <div class="form-group">
-                <label for="card name"><h5>Card name</h5></label>
-                <input type="text" class="form-control" id="cardname" placeholder="card name" name="cardName">
+          <form action="dashboard.php" method="POST">
+            <div class="form-group">
+              <label for="card name">
+                <h5>Card name</h5>
+              </label>
+              <input type="text" class="form-control" id="cardname" placeholder="card name" name="cardName">
             </div>
             <button type="submit" class="btn btn-primary"  name="card_submit">Submit</button>
-            </form>
+          </form>
           </div>
           <!-- Form ending -->
           <div class="modal-footer">
@@ -290,7 +292,6 @@
                   <th class="header" scope="col">Amount</th>
                   <th class="header" scope="col">Mode</th>
                   <th class="header" scope="col">Type</th>
-                  <th class="header" scope="col">Details</th>
                 </tr>
               </thead>
               <tbody>
@@ -305,30 +306,6 @@
                   <td><?php print($rows['amount']);?></td>
                   <td><?php print($rows['payment_type']);?></td>
                   <td><?php print($rows['type']);?></td>
-                  <td>
-                    <button type="button" class="btn btn-light btn-sm" data-toggle="modal" data-target="#exampleModal">
-                      More
-                    </button>
-                    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                      <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                          <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                              <span aria-hidden="true">&times;</span>
-                            </button>
-                          </div>
-                          <div class="modal-body">
-                            ...
-                          </div>
-                          <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary">Save changes</button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </td>
                 </tr>
                   <?php $i+=1; }?>
               </tbody>
