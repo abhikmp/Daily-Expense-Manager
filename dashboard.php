@@ -4,6 +4,7 @@
     header('location: home.php');
   }
   $emailID = $_SESSION['emailID'];
+  
   $db = mysqli_connect('localhost', 'newroot', '12345', 'expmgr') or die('unable to estabilish connection with database');
   $result = mysqli_query($db, "SELECT uid FROM user WHERE email='$emailID'") or die('unable to retrieve uid');
   $uid = (int)mysqli_fetch_assoc($result);
@@ -12,7 +13,7 @@
     $cardName = $_POST['cardName'];
     $cardexists = mysqli_query($db, "SELECT * FROM card WHERE card_name='$cardName'") or die("cardexists".mysqli_error($db));
        if($row=mysqli_fetch_assoc($cardexists)){
-         echo "<script>alert('card already added');</script>";
+         echo "";
        }else{
           mysqli_query($db,"INSERT INTO card(card_name, uid) VALUES ('$cardName', $uid)");
   }
@@ -54,28 +55,29 @@
 <html>
 
 <head>
-    <title>Dashboard</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="dashboard.css" />
+  <title>Dashboard</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="dashboard.css" />
 </head>
 
 <script>
   payment = 0
+
   function removePayment() {
-    if(payment >= 1) {
+    if (payment >= 1) {
       document.getElementById('paymentInput').remove();
       payment = 0
     }
   }
 
   function addCard() {
-    if(payment >= 1) {
+    if (payment >= 1) {
       removePayment()
     }
     payment = 1
@@ -83,20 +85,23 @@
     const div = document.createElement('div')
     div.innerHTML = `<div id="paymentInput">
                       <label for="exampleFormControlSelect1">Card</label>
-                        <select class="form-control" id="modeform">
+                        <select class="form-control" id="modeform" name="card">
+                        <?php 
+                        $cards = mysqli_query($db,"SELECT * FROM card WHERE uid=$uid");
+                        while($rows=mysqli_fetch_assoc($cards)){ 
+                        ?>
                           <!-- Fetching list from card added by particular user and showing it here -->
-                          <option>HDFC Card</option>
-                          <option>AXIS BANK</option>
-                          <option>PNG CARD</option>
+                          <option value="<?php $rows['card_name'] ?>"><?php print($rows['card_name'])?></option>
+                         <?php }?>
                         </select> 
                     </div>`;
 
     obj.appendChild(div);
-    
+
   }
 
   function addBanking() {
-    if(payment >= 1) {
+    if (payment >= 1) {
       removePayment()
     }
     payment = 1
@@ -105,47 +110,46 @@
     div.innerHTML = `<div id="paymentInput">
                       <div class="form-group">
                         <label for="exampleFormControlInput1">Bank Detail</label>
-                        <input type="text" class="form-control" id="bankDetail" placeholder="Bank Detail">
+                        <input type="text" class="form-control" id="bankDetail" placeholder="Bank Detail" name="bank" required>
                       </div>
                     </div>`;
 
     obj.appendChild(div);
-    
-  }
 
+  }
 </script>
 
 <body>
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
-        <a href="dashboard.php" class="navbar-brand">Daily Expense Manager</a>
-        <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div id="navbarCollapse" class="collapse navbar-collapse">
-            <ul class="nav navbar-nav ml-auto">
-                <li class="nav-item dropdown">
-                    <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Hi <?= $_SESSION['username'];?></a>
-                    <div class="dropdown-menu dropdown-menu-right">
-                        <a href="#" class="dropdown-item">View past transactions</a>
-                        <a href="settings.php" class="dropdown-item">Edit Information</a>
-                        <a type="button" class="dropdown-item" data-toggle="modal" data-target="#myModal">Add card</a>
-                        <div class="dropdown-divider"></div>
-                        <a href="home.php" class="dropdown-item">Logout</a>
-                    </div>
-                </li>
-            </ul>
-        </div>
-    </nav>
-<!-- Dialog box for add card -->
-    <div class="modal fade" id="myModal" role="dialog">
-      <div class="modal-dialog">
-
-        
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+    <a href="dashboard.php" class="navbar-brand">Daily Expense Manager</a>
+    <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div id="navbarCollapse" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav ml-auto">
+        <li class="nav-item dropdown">
+          <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Hi <?php print($_SESSION['username']); ?></a>
+          <div class="dropdown-menu dropdown-menu-right">
+            <a href="#" class="dropdown-item">View past transactions</a>
+            <a href="settings.php" class="dropdown-item">Edit Information</a>
+            <a type="button" class="dropdown-item" data-toggle="modal" data-target="#myModal">Add card</a>
+            <div class="dropdown-divider"></div>
+            <a href="logout.php" class="dropdown-item">Logout</a>
           </div>
-          <div class="modal-body">
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <!-- Dialog box for add card -->
+  <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+
+
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <div class="modal-body">
 
           <!-- Form for entering card details -->
           <form action="dashboard.php" method="POST">
@@ -157,19 +161,19 @@
             </div>
             <button type="submit" class="btn btn-primary"  name="card_submit">Submit</button>
           </form>
-          </div>
-          <!-- Form ending -->
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          </div>
         </div>
-
+        <!-- Form ending -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
       </div>
-   </div>
-<!-- Dialog box for add card -->
 
-<!-- First row for showing summary -->
-<div class="firstrow">
+    </div>
+  </div>
+  <!-- Dialog box for add card -->
+
+  <!-- First row for showing summary -->
+  <div class="firstrow">
     <div class="row">
       <div class="col-6 row1col1">
         <div class="currentmonth">
@@ -187,7 +191,7 @@
           <h2 id="currentmonthname"><?php print($currMonth); ?></h2>
           <div class="transactiondetails">
             <p id="totalcredit">Overall Credit : <b><?php print($credit);?></b></p>
-            <p id="totaldebit">Total money spent : <b><?php print($debit);?></b></p>
+            <p id="totaldebit">Total money spent : <b><?php print($debit)?></b></p>
             <p id="totallimit">Total Limit : <b>15000</b></p>
             <p id="moneyspent">Balance : <b><?php print($savings);?></b></p>
           </div>
