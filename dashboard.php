@@ -7,8 +7,8 @@
   
   $db = mysqli_connect('localhost', 'newroot', '12345', 'expmgr') or die('unable to estabilish connection with database');
   $result = mysqli_query($db, "SELECT uid FROM user WHERE email='$emailID'") or die('unable to retrieve uid');
-  $uid = (int)mysqli_fetch_assoc($result);
-  
+  $row = mysqli_fetch_assoc($result);
+  $uid = $row['uid'];
 
   if (isset($_POST['card_submit'])) {
     $cardName = $_POST['cardName'];
