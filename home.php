@@ -1,7 +1,7 @@
 <?php
 
   session_start();
-
+  $_SESSION['username']=NULL;
   $emailID = "";
   $pass = "";
 
@@ -71,7 +71,7 @@
             <input type="password" class="myInput" id="password" placeholder="password" name="password" required>
           </div>
           <input type="submit" class="SubmitBtn" value="login" name="login">
-          <a class = "registerLink" href="register.html">New User? Register</a>
+          <a class = "registerLink" href="register.php">New User? Register</a>
         
         </form>
       </div>

@@ -3,6 +3,51 @@
   if($_SESSION['username'] == NULL) {
     header('location: home.php');
   }
+  $emailID = $_SESSION['emailid'];
+  $db = mysqli_connect('localhost', 'newroot', '12345', 'expmgr') or die('unable to estabilish connection with database');
+  $result = mysqli_query($db, "SELECT uid FROM user WHERE email='$emailID'") or die('unable to retrieve uid');
+  $uid = (int)mysqli_fetch_assoc($result);
+  
+  if(isset($_POST['card_submit'])){
+    $cardName = $_POST['cardName'];
+    $cardexists = mysqli_query($db, "SELECT * FROM card WHERE card_name='$cardName'") or die("cardexists".mysqli_error($db));
+       if($row=mysqli_fetch_assoc($cardexists)){
+         echo "<script>alert('card already added');</script>";
+       }else{
+          mysqli_query($db,"INSERT INTO card(card_name, uid) VALUES ('$cardName', $uid)");
+  }
+  }
+  
+  if (isset($_POST['submit'])) {
+    $date = date($_POST['date']);
+    $amount = $_POST['amount'];
+    $title = $_POST['title'];
+    $type = $_POST['type']; //credit or debit
+    $paymentType = $_POST['paymentType']; //upi or net banking or card
+  
+    if (isset($_POST['card'])) {
+      $cardName = $_POST['card'];
+      $result = mysqli_query($db, "SELECT card_id FROM card WHERE card_name='$cardName' AND uid=$uid");
+      $cardID = (int)mysqli_fetch_assoc($result);
+      mysqli_query($db, "INSERT INTO expense(uid, amount, title, payment_type, type, date, card_id) VALUES ($uid, $amount, '$title', '$paymentType', '$type', '$date', $cardID)") or die("unable to insert into expense-card: ".mysqli_error($db));
+      // 
+      // $cardquery = "INSERT INTO card(card_name, uid) VALUES ('$cardName', $uid)";
+      // //insert into card table and get cardid
+      // mysqli_query($db, $cardquery) or die('unable to insert card' . mysqli_error($db));
+      // $result = mysqli_query($db, "SELECT card_id FROM card WHERE card_name='$cardName' AND uid=$uid");
+      // $cardID = (int)mysqli_fetch_assoc($result);
+      //} uncomment till here
+      //insert into expense table
+    } elseif (isset($_POST['bank'])) {
+      $bank = $_POST['bank'];
+      mysqli_query($db, "INSERT INTO expense(uid, amount, title, payment_type, type, date, bank) VALUES ($uid, $amount, '$title', '$paymentType', '$type', '$date', '$bank')") or die("unable to insert into expense-ib: ".mysqli_error($db));
+    }else {
+      mysqli_query($db,"INSERT INTO expense(uid, amount, title, payment_type, type, date) VALUES ($uid, $amount, '$title', '$paymentType', '$type', '$date')") or die('unable to insert cash info');
+    }
+  
+  }
+  
+
 ?>
 
 <!DOCTYPE html>
@@ -106,9 +151,9 @@
             <form>
               <div class="form-group">
                 <label for="card name"><h5>Card name</h5></label>
-                <input type="text" class="form-control" id="cardname" placeholder="card name">
-              </div>
-              <button type="submit" class="btn btn-primary" data-dismiss="modal">Submit</button>
+                <input type="text" class="form-control" id="cardname" placeholder="card name" name="cardName">
+            </div>
+            <button type="submit" class="btn btn-primary"  name="card_submit">Submit</button>
             </form>
           </div>
           <!-- Form ending -->
@@ -122,149 +167,177 @@
 <!-- Dialog box for add card -->
 
 <!-- First row for showing summary -->
-    <div class="firstrow">
-        <div class="row">
-            <div class="col-6 row1col1">
-                <div class="currentmonth">
-                    <h2 id="currentmonthname">November</h2>
-                    <div class="transactiondetails">
-                        <p id="moneyspent">Total Money spent : <b>12345</b></p>
-                        <p id="totallimit">Total Limit : <b>15000</b></p>
-                        <p id="totalcredit">Overall Credit : <b>15000</b></p>
-                        <p id="totaldebit">Overall Debit : <b>2655</b></p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-6 row1col2">
-                <div class="prevmonth">
-                    <h2 id="prevmonthname">October</h2>
-                    <div class="transactiondetails">
-                        <p id="moneyspent">Total Money spent : <b>12345</b></p>
-                        <p id="totallimit">Total Limit : <b>15000</b></p>
-                        <p id="totalcredit">Overall Credit : <b>15000</b></p>
-                        <p id="totaldebit">Overall Debit : <b>2655</b></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-<!-- First row for showing summary -->
+<div class="firstrow">
+    <div class="row">
+      <div class="col-6 row1col1">
+        <div class="currentmonth">
 
-<!-- Second row for adding details and showing latest transactions -->
-    <div class="secondrow">
-        <div class="row">
-            <div class="col-6 row2col1">
-                <h2 id="adddetails">Add details</h2>
-                <div class="formentry">
+          <?php
+            $currMonth = date('F');
+            $res = mysqli_query($db,"SELECT SUM(amount) FROM expense WHERE MONTHNAME(date)='$currMonth' AND type='debit' AND uid=$uid");
+            $debit = (float)mysqli_fetch_assoc($res)['SUM(amount)'];
+            $res = mysqli_query($db, "SELECT SUM(amount) FROM expense WHERE MONTHNAME(date)='$currMonth' AND type='credit' AND uid=$uid");
+            $credit = (float)mysqli_fetch_assoc($res)['SUM(amount)'];
+            $limit = 15000;
+            $savings = $credit-$debit;
+          ?>
 
-                <!-- FORM FOR ENTERING TRANSACTION DETAILS -->
-                    <form>
-                        <div class="form-group">
-                          <label class="control-label" for="date">Date</label>
-                          <input class="form-control" id="date" name="date" placeholder="MM/DD/YYY" type="date" max="<?php echo date("Y-m-d"); ?>"/>
-                        </div>
-                        <div class="form-group">
-                          <label for="exampleFormControlInput1">Title</label>
-                          <input type="text" class="form-control" id="titleform" placeholder="Title">
-                        </div>
-                        <div class="form-group">
-                          <label for="paymentType">Payment Type</label>
-                        </div>  
-                        <div class="form-group">
-                              <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="paymentType" id="cashPayment" value="cashPayment" checked onclick="removePayment()">
-                                <label class="form-check-label" for="inlineRadio2">Cash</label>
-                              </div>
-                              <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="paymentType" id="cardPayment" value="cardPayment" onclick="addCard()">
-                                <label class="form-check-label" for="inlineRadio1">Card</label>
-                              </div>
-                              
-                              <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="paymentType" id="internetBanking" value="internetBanking" onclick="addBanking()">
-                                <label class="form-check-label" for="inlineRadio2">Internet Banking</label>
-                              </div>
-                        </div>
-                        <div class="form-group" id="paymentDetail"></div>
-                        <div class="form-group">
-                            <label for="exampleFormControlInput1">Amount</label>
-                            <input type="number" class="form-control" id="amountform" placeholder="Amount">
-                        </div>
-                        
-                        <div class="form-group">
-                          <label for="type">Type</label>
-                        </div>  
-                        <div class="form-group">
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="type" id="debitform" value="debit" checked>
-                                <label class="form-check-label" for="inlineRadio2">Debit</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="type" id="creditform" value="credit">
-                                <label class="form-check-label" for="inlineRadio1">Credit</label>
-                            </div>
-                              
-                        </div>
-                        <button type="submit" class="btn btn-primary">Submit</button>
-                     </form>
-                      
-                </div>
-            </div>
-            <div class="col-6 row2col2">
-                <h2 id="transactiondetailstable">Transaction details <button class="btn btn-primary" type="submit" style="margin-left: 25px;">View all</button> </h2>
-                
-                <div class="transactiontable">
-                    <div class="table-responsive">
-                        <table class="table table-hover table-dark">
-                            <thead class="thead-dark">
-                              <tr>
-                                <th class="header" scope="col">Sl No.</th>
-                                <th class="header" scope="col">Title</th>
-                                <th class="header" scope="col">Amount</th>
-                                <th class="header" scope="col">Mode</th>
-                                <th class="header" scope="col">Type</th>
-                                <th class="header" scope="col">Details</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr>
-                                <th scope="row">1</th>
-                                <td>Coffee</td>
-                                <td>50</td>
-                                <td>Card</td>
-                                <td>Debit</td>
-                                <td>
-                                    <button type="button" class="btn btn-light btn-sm" data-toggle="modal" data-target="#exampleModal">
-                                        More
-                                      </button>
-                                      <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog" role="document">
-                                          <div class="modal-content">
-                                            <div class="modal-header">
-                                              <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                              </button>
-                                            </div>
-                                            <div class="modal-body">
-                                              ...
-                                            </div>
-                                            <div class="modal-footer">
-                                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                              <button type="button" class="btn btn-primary">Save changes</button>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
-                    </div>
-                </div>
-            </div>
+          <h2 id="currentmonthname"><?php print($currMonth); ?></h2>
+          <div class="transactiondetails">
+            <p id="totalcredit">Overall Credit : <b><?php print($credit);?></b></p>
+            <p id="totaldebit">Total money spent : <b><?php print($debit);?></b></p>
+            <p id="totallimit">Total Limit : <b>15000</b></p>
+            <p id="moneyspent">Balance : <b><?php print($savings);?></b></p>
+          </div>
         </div>
+      </div>
+      <div class="col-6 row1col2">
+        <div class="prevmonth">
+
+          <?php
+            $lastMonth = date('F', strtotime('last month'));
+            $res = mysqli_query($db,"SELECT SUM(amount) FROM expense WHERE MONTHNAME(date)='$lastMonth' AND type='debit' AND uid=$uid");
+            $debit = (float)mysqli_fetch_assoc($res)['SUM(amount)'];
+            $res = mysqli_query($db, "SELECT SUM(amount) FROM expense WHERE MONTHNAME(date)='$lastMonth' AND type='credit' AND uid=$uid");
+            $credit = (float)mysqli_fetch_assoc($res)['SUM(amount)'];
+            $limit = 15000;
+            $savings = $limit - ($credit-$debit);
+          ?>
+
+          <h2 id="prevmonthname"><?php print($lastMonth); ?></h2>
+          <div class="transactiondetails">
+            <p id="totalcredit">Overall Credit : <b><?php print($credit);?></b></p>
+            <p id="totaldebit">Total money spent : <b><?php print($debit)?></b></p>
+            <p id="totallimit">Total Limit : <b>15000</b></p>
+            <!-- <p id="moneyspent">You saved : <b><?php print($savings);?></b></p> -->
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
+  <!-- First row for showing summary -->
+
+  <!-- Second row for adding details and showing latest transactions -->
+  <div class="secondrow">
+    <div class="row">
+      <div class="col-6 row2col1">
+        <h2 id="adddetails">Add details</h2>
+        <div class="formentry">
+
+          <!-- FORM FOR ENTERING TRANSACTION DETAILS -->
+          <form action="dashboard.php" method="POST">
+            <div class="form-group">
+              <label class="control-label" for="date">Date</label>
+              <input class="form-control" id="date" name="date" placeholder="MM/DD/YYY" type="date" max="<?php echo date("Y-m-d"); ?>" />
+            </div>
+            <div class="form-group">
+              <label for="exampleFormControlInput1">Title</label>
+              <input type="text" class="form-control" id="titleform" placeholder="Title" name="title" required>
+            </div>
+            <div class="form-group">
+              <label for="paymentType">Payment Type</label>
+            </div>
+            <div class="form-group">
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="paymentType" id="cashPayment" value="cashPayment" checked onclick="removePayment()">
+                <label class="form-check-label" for="inlineRadio2">Cash</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="paymentType" id="cardPayment" value="cardPayment" onclick="addCard()">
+                <label class="form-check-label" for="inlineRadio1">Card</label>
+              </div>
+
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="paymentType" id="internetBanking" value="internetBanking" onclick="addBanking()">
+                <label class="form-check-label" for="inlineRadio2">Internet Banking</label>
+              </div>
+            </div>
+            <div class="form-group" id="paymentDetail"></div>
+            <div class="form-group">
+              <label for="exampleFormControlInput1">Amount</label>
+              <input type="number" class="form-control" id="amountform" placeholder="Amount" name="amount">
+            </div>
+
+            <div class="form-group">
+              <label for="type">Type</label>
+            </div>
+            <div class="form-group">
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="type" id="debitform" value="debit" checked>
+                <label class="form-check-label" for="inlineRadio2">Debit</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="type" id="creditform" value="credit">
+                <label class="form-check-label" for="inlineRadio1">Credit</label>
+              </div>
+
+            </div>
+            <button type="submit" class="btn btn-primary" name="submit">Submit</button>
+          </form>
+
+        </div>
+      </div>
+      <div class="col-6 row2col2">
+        <h2 id="transactiondetailstable">Transaction details <button class="btn btn-primary" type="submit" style="margin-left: 25px;">View all</button> </h2>
+
+        <div class="transactiontable">
+          <div class="table-responsive">
+            <table class="table table-hover table-dark">
+              <thead class="thead-dark">
+                <tr>
+                  <th class="header" scope="col">Sl No.</th>
+                  <th class="header" scope="col">Title</th>
+                  <th class="header" scope="col">Amount</th>
+                  <th class="header" scope="col">Mode</th>
+                  <th class="header" scope="col">Type</th>
+                  <th class="header" scope="col">Details</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php 
+                  $results = mysqli_query($db, "SELECT title, amount, payment_type, type FROM expense WHERE uid=$uid");
+                  $i=1;
+                  while ($rows=mysqli_fetch_assoc($results)){
+                  ?>
+                <tr>
+                  <th scope="row"><?php print($i);?></th>
+                  <td><?php print($rows['title']);?></td>
+                  <td><?php print($rows['amount']);?></td>
+                  <td><?php print($rows['payment_type']);?></td>
+                  <td><?php print($rows['type']);?></td>
+                  <td>
+                    <button type="button" class="btn btn-light btn-sm" data-toggle="modal" data-target="#exampleModal">
+                      More
+                    </button>
+                    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <div class="modal-body">
+                            ...
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary">Save changes</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                  <?php $i+=1; }?>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 
 </html>

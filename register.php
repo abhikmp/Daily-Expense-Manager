@@ -44,7 +44,7 @@
 <body>
   <nav class="navbar navbar-dark bg-dark">
     <div class="navbar-brand">
-      <a class="titleName" href="home.html"> Daily Expense Manager</a>
+      <a class="titleName" href="home.php"> Daily Expense Manager</a>
     </div>
   </nav>
   <div class="regSection">
@@ -74,7 +74,7 @@
 
       <input type="submit" class="SubmitBtn" value="Register" name="registerbtn">
 
-      <a class="loginLink" href="login.php">Already User? Login</a>
+      <a class="loginLink" href="home.php">Already User? Login</a>
     </form>
   </div>
   </body>
