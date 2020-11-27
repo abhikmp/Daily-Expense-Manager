@@ -35,7 +35,7 @@
       $bank = $_POST['bank'];
       mysqli_query($db, "INSERT INTO expense(uid, amount, title, payment_type, type, date, bank) VALUES ($uid, $amount, '$title', '$paymentType', '$type', DATE '$date', '$bank')") or die("unable to insert into expense-ib: " . mysqli_error($db));
     } else {
-      print($date);
+      //print($date);
       mysqli_query($db, "INSERT INTO expense(uid, amount, title, payment_type, type, date) VALUES ($uid, $amount, '$title', '$paymentType', '$type', DATE '$date')") or die('unable to insert cash info');
     }
     $_POST['submit'] = NULL;
@@ -200,14 +200,14 @@
           $res = mysqli_query($db, "SELECT SUM(amount) FROM expense WHERE MONTHNAME(date)='$lastMonth' AND type='credit' AND uid=$uid");
           $credit = (float)mysqli_fetch_assoc($res)['SUM(amount)'];
           $limit = 15000;
-          $savings = $limit - ($credit - $debit);
+          $balance = ($credit - $debit)<0 ? 0 : $credit-$debit;
           ?>
 
           <h2 id="prevmonthname"><?php print($lastMonth); ?></h2>
           <div class="transactiondetails">
             <p id="totalcredit">Overall Credit : <b><?php print($credit); ?></b></p>
             <p id="totaldebit">Total money spent : <b><?php print($debit) ?></b></p>
-            <p id="totallimit">Total Limit : <b>15000</b></p>
+            <p id="totallimit">You saved : <b><?php print($balance) ?></b></p>
             <!-- <p id="moneyspent">You saved : <b><?php print($savings); ?></b></p> -->
           </div>
         </div>
